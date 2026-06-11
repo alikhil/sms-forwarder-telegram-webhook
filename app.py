@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from html import escape
 import logging
 from typing import Any
@@ -27,8 +27,8 @@ class Settings(BaseSettings):
 class SmsWebhookPayload(BaseModel):
     from_: str = Field(..., alias="from")
     text: str
-    sent_stamp: str = Field(..., alias="sentStamp")
-    received_stamp: str = Field(..., alias="receivedStamp")
+    sent_stamp: str | int | float = Field(..., alias="sentStamp")
+    received_stamp: str | int | float = Field(..., alias="receivedStamp")
     sim: str
 
 
@@ -47,11 +47,24 @@ def normalize_sim(sim: str) -> str:
     return cleaned
 
 
-def try_parse_timestamp(raw: str) -> str:
-    try:
-        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
-    except ValueError:
-        return raw
+def try_parse_timestamp(raw: str | int | float) -> str:
+    dt: datetime | None = None
+    if isinstance(raw, (int, float)):
+        timestamp = raw / 1000 if raw > 1_000_000_000_000 else raw
+        dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+    elif isinstance(raw, str):
+        stripped = raw.strip()
+        try:
+            numeric = float(stripped)
+            timestamp = numeric / 1000 if numeric > 1_000_000_000_000 else numeric
+            dt = datetime.fromtimestamp(timestamp, tz=timezone.utc)
+        except ValueError:
+            try:
+                dt = datetime.fromisoformat(stripped.replace("Z", "+00:00"))
+            except ValueError:
+                return raw
+    else:
+        return str(raw)
 
     formatted = dt.strftime("%d %b %Y, %H:%M:%S")
     tz_offset = dt.strftime("%z")

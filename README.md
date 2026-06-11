@@ -18,6 +18,8 @@ The endpoint expects:
 }
 ```
 
+`sentStamp` and `receivedStamp` can be ISO datetime strings or epoch timestamps (seconds/milliseconds).
+
 ## Setup with `uv`
 
 1. Create env file:
