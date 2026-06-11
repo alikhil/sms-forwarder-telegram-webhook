@@ -29,6 +29,7 @@ The endpoint expects:
 2. Fill values in `.env`:
 
    - `TELEGRAM_BOT_TOKEN` — token from BotFather
+   - `LOG_LEVEL` — `INFO` (default) or `DEBUG` for more verbose logs
    - `DEFAULT_TARGET_CHAT_ID` — optional fallback destination
    - `SIM1_TARGET_CHAT_ID` / `SIM2_TARGET_CHAT_ID` — optional per-SIM destinations
 
