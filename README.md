@@ -61,6 +61,24 @@ Run container:
 docker run --rm -p 8000:8000 --env-file .env sms-forwarder-telegram-webhook
 ```
 
+Docker Compose (build directly from `main`):
+
+```yaml
+services:
+  sms-webhook:
+    build: https://github.com/alikhil/sms-forwarder-telegram-webhook.git#main
+    restart: always
+    environment:
+      DEFAULT_TARGET_CHAT_ID: -88005553535
+      SIM1_TARGET_CHAT_ID: -100500
+      SIM2_TARGET_CHAT_ID: -100500800
+      LOG_LEVEL: DEBUG
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+```
+
 ## Routing modes
 
 ### 1 SIM / single destination
